@@ -1,9 +1,11 @@
+import { Suspense } from 'react';
+
 import { Sky } from '@react-three/drei';
 import { PointerLockControls } from '@react-three/drei';
-
 import { Physics } from '@react-three/cannon';
+
 import { Terrain } from './components/Terrain';
-import { Suspense } from 'react';
+import { Player } from './components/Player';
 
 export function Renderer() {
   return (
@@ -13,6 +15,7 @@ export function Renderer() {
       <PointerLockControls />
       <Physics>
         <Terrain />
+        <Player />
       </Physics>
     </Suspense>
   );

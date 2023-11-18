@@ -1,8 +1,13 @@
+import { Canvas } from '@react-three/fiber';
+import { Renderer } from './Renderer';
+
 function App() {
   return (
-    <>
-      <p className="bg-red-400">Hello world</p>
-    </>
+    <main className="w-screen h-screen">
+      <Canvas>
+        <Renderer />
+      </Canvas>
+    </main>
   );
 }
 

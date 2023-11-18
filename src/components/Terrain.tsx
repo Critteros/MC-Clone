@@ -1,4 +1,4 @@
-import { Mesh, TextureLoader } from 'three';
+import { Mesh, NearestFilter, RepeatWrapping, TextureLoader } from 'three';
 
 import { usePlane } from '@react-three/cannon';
 import { useLoader } from '@react-three/fiber';
@@ -13,6 +13,9 @@ export function Terrain() {
   }));
 
   groundTexture.repeat.set(100, 100);
+  groundTexture.magFilter = NearestFilter;
+  groundTexture.wrapS = RepeatWrapping;
+  groundTexture.wrapT = RepeatWrapping;
 
   return (
     <mesh ref={ref}>

@@ -49,7 +49,7 @@ export function Player() {
 
     api.velocity.set(direction.x, velY, direction.z);
 
-    if (jump && Math.abs(velY) < 0.05) {
+    if (jump && Math.abs(velY) < 0.005) {
       api.velocity.set(velX, JUMP_FORCE, velZ);
     }
   });

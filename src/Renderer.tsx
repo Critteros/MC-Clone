@@ -13,7 +13,7 @@ export function Renderer() {
       <Sky sunPosition={[100, 20, 100]} />
       <ambientLight intensity={10} />
       <PointerLockControls />
-      <Physics>
+      <Physics gravity={[0, -10, 0]}>
         <Terrain />
         <Player />
       </Physics>

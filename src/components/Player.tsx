@@ -13,7 +13,7 @@ const SPEED = 5;
 const JUMP_FORCE = 5;
 
 export function Player() {
-  const position = useRef([0, 0, 0]);
+  const position = useRef([0, 67, 0]);
   const velocity = useRef([0, 0, 0]);
 
   const [, get] = useKeyboardControls<Controls>();
@@ -22,7 +22,7 @@ export function Player() {
   const [ref, api] = useSphere<Mesh>(() => ({
     mass: 1,
     type: 'Dynamic',
-    position: [0, 1, 0],
+    position: [0, 67, 0],
   }));
 
   useEffect(() => {

@@ -1,7 +1,9 @@
-import dirtTexture from './assets/dirt.jpg';
-import glassTexture from './assets/glass.png';
-import grassTexture from './assets/grass.jpg';
-import logTexture from './assets/log.jpg';
-import woodTexture from './assets/wood.png';
+import dirtImage from './assets/dirt.jpg';
+import glassImage from './assets/glass.png';
+import grassImage from './assets/grass.jpg';
+import logImage from './assets/log.jpg';
+import woodImage from './assets/wood.png';
+import sandImage from './assets/sand.png';
+import stoneImage from './assets/stone.png';
 
-export { dirtTexture, glassTexture, grassTexture, logTexture, woodTexture };
+export { dirtImage, glassImage, grassImage, logImage, woodImage, sandImage, stoneImage };

@@ -17,6 +17,9 @@ dependencies:
   '@types/three':
     specifier: ^0.158.2
     version: 0.158.2
+  lodash.groupby:
+    specifier: ^4.6.0
+    version: 4.6.0
   nanoid:
     specifier: ^5.0.3
     version: 5.0.3
@@ -34,6 +37,12 @@ dependencies:
     version: 4.4.6(@types/react@18.2.37)(react@18.2.0)
 
 devDependencies:
+  '@types/lodash':
+    specifier: ^4.14.201
+    version: 4.14.201
+  '@types/lodash.groupby':
+    specifier: ^4.6.9
+    version: 4.6.9
   '@types/node':
     specifier: ^20.9.2
     version: 20.9.2
@@ -802,6 +811,16 @@ packages:
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+    dev: true
+
+  /@types/lodash.groupby@4.6.9:
+    resolution: {integrity: sha512-z2xtCX2ko7GrqORnnYea4+ksT7jZNAvaOcLd6mP9M7J09RHvJs06W8BGdQQAX8ARef09VQLdeRilSOcfHlDQJQ==}
+    dependencies:
+      '@types/lodash': 4.14.201
+    dev: true
+
+  /@types/lodash@4.14.201:
+    resolution: {integrity: sha512-y9euML0cim1JrykNxADLfaG0FgD1g/yTHwUs/Jg9ZIU7WKj2/4IW9Lbb1WZbvck78W/lfGXFfe+u2EGfIJXdLQ==}
     dev: true
 
   /@types/node@20.9.2:
@@ -1770,6 +1789,10 @@ packages:
 
   /lodash.clamp@4.0.3:
     resolution: {integrity: sha512-HvzRFWjtcguTW7yd8NJBshuNaCa8aqNFtnswdT7f/cMd/1YKy5Zzoq4W/Oxvnx9l7aeY258uSdDfM793+eLsVg==}
+    dev: false
+
+  /lodash.groupby@4.6.0:
+    resolution: {integrity: sha512-5dcWxm23+VAoz+awKmBaiBvzox8+RqMgFhi7UvX9DHZr2HdxHXM/Wrf8cfKpsW37RNrvtPn6hSwNqurSILbmJw==}
     dev: false
 
   /lodash.merge@4.6.2:

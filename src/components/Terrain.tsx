@@ -1,55 +1,53 @@
-import { InstancedMesh, NearestFilter, RepeatWrapping, TextureLoader, Matrix4 } from 'three';
+import groupBy from 'lodash.groupby';
 
-import { useBox } from '@react-three/cannon';
-import { useLoader } from '@react-three/fiber';
+import { BlockType, textureMap } from '../blocks';
 
-import { grassTexture } from '../textures/images';
-import { useEffect, useMemo, useRef } from 'react';
+import { Block } from '../blocks';
+import { Cubes } from './Cubes';
+
+const TERRAIN_LENGTH = 10;
+
+const terrainPositions: [x: number, y: number, z: number][] = [];
+
+for (let x = -TERRAIN_LENGTH; x < TERRAIN_LENGTH; x++) {
+  for (let z = -TERRAIN_LENGTH; z < TERRAIN_LENGTH; z++) {
+    terrainPositions.push([x, 0, z]);
+  }
+}
+
+const layers = {
+  [BlockType.GRASS]: 1,
+  // [BlockType.DIRT]: 3,
+} as const satisfies Partial<Record<BlockType, number>>;
+
+const blockMap = (() => {
+  let currentY = 0;
+  const blocks = Object.entries(layers).reduce((acc, [blockType, yRange]) => {
+    const [minY, maxY] = [currentY, currentY + yRange];
+    currentY = maxY;
+
+    return [
+      ...acc,
+      ...terrainPositions
+        .flatMap(([x, , z]) => Array.from({ length: maxY - minY }, (_, i) => [x, i + minY, z]))
+        .map(([x, y, z]) => new Block(x, y, z, blockType as BlockType)),
+    ];
+  }, [] as Block[]);
+
+  return blocks;
+})();
+const blockLayers = groupBy(blockMap, 'type');
 
 export function Terrain() {
-  const groundTexture = useLoader(TextureLoader, grassTexture);
-
-  const gridPositions = useMemo(() => {
-    const positions = [];
-
-    for (let x = -5; x < 5; x++) {
-      for (let z = -5; z < 5; z++) {
-        positions.push([x, 0, z]);
-      }
-    }
-
-    return positions as [number, number, number][];
-  }, []);
-
-  const [ref] = useBox(
-    (i) => ({
-      type: 'Dynamic',
-      position: gridPositions[i],
-    }),
-    useRef<InstancedMesh>(null),
-  );
-
-  useEffect(() => {
-    gridPositions.forEach((position, index) => {
-      const [x, y, z] = position;
-
-      ref.current?.setMatrixAt(index, new Matrix4().makeTranslation(x, y, z));
-    });
-    ref.current!.instanceMatrix.needsUpdate = true;
-  }, [gridPositions, ref]);
-
-  groundTexture.magFilter = NearestFilter;
-  groundTexture.wrapS = RepeatWrapping;
-  groundTexture.wrapT = RepeatWrapping;
-
   return (
-    <instancedMesh
-      ref={ref}
-      key={gridPositions.length}
-      args={[undefined, undefined, gridPositions.length]}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial attach="material" map={groundTexture} />
-    </instancedMesh>
+    <>
+      {Object.entries(blockLayers).map(([blockType, blocks]) => (
+        <Cubes
+          key={blockType}
+          texture={textureMap[blockType as BlockType]}
+          positions={blocks.map((el) => [...el.position])}
+        />
+      ))}
+    </>
   );
 }

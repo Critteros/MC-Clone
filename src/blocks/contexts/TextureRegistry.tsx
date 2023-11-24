@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createContext, type ReactNode } from 'react';
 import { useTexture } from '@react-three/drei';
 
-import { BlockType } from './types';
+import { BlockType } from '../types';
 
 import dirtImage from './textures/dirt.jpg';
 import grassImage from './textures/grass.jpg';

@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { Sky } from '@react-three/drei';
 import { PointerLockControls } from '@react-three/drei';
 import { TerrainRenderer } from './world/TerrainRenderer';
+import { Player } from './player/Player';
 
 export function Renderer() {
   return (
@@ -11,6 +12,7 @@ export function Renderer() {
       <ambientLight intensity={10} />
       <PointerLockControls />
       <TerrainRenderer />
+      <Player />
     </Suspense>
   );
 }

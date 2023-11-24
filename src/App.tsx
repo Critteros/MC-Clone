@@ -4,9 +4,9 @@ import { Stats, KeyboardControls } from '@react-three/drei';
 import { Physics } from '@react-three/rapier';
 
 import { BlockRegistryProvider } from './blocks/contexts/BlockRegistryProvider';
+import { useKeyMap } from './hooks/useKeyMap';
 
 import { Renderer } from './Renderer';
-import { useKeyMap } from './hooks/useKeyMap';
 
 function App() {
   const keyMap = useKeyMap();

@@ -18,9 +18,35 @@ export class SpatialObjectStorage<ObjectType = unknown> {
     });
   }
 
-  getObject({ position }: { position: number[] }) {
+  setMultipleObjects(entries: Array<{ position: number[]; object: ObjectType }>): this {
+    return produce(this, (draft: this) => {
+      entries.forEach(({ position, object }) => {
+        const key = this.serializeKey(...position);
+        if (position.length !== this.nDimensions) {
+          throw new Error(`Expected ${this.nDimensions} coordinates, but got ${position.length}`);
+        }
+        draft._objectStorage.set(key, object);
+      });
+    });
+  }
+
+  getObject({
+    position,
+  }: {
+    position: number[];
+  }): ({ position: number[] } & ObjectType) | undefined {
     const key = this.serializeKey(...position);
-    return { position, ...this._objectStorage.get(key) };
+    const entry = this._objectStorage.get(key);
+
+    if (!entry) {
+      return undefined;
+    }
+
+    return { position, ...entry };
+  }
+
+  getMultipleObjects(positions: Array<{ position: number[] }>) {
+    return positions.map(({ position }) => this.getObject({ position }));
   }
 
   entries() {
@@ -28,6 +54,13 @@ export class SpatialObjectStorage<ObjectType = unknown> {
     return Array.from(mapEntries, ([key, object]) => {
       const position = this.deserializeKey(key);
       return { position, ...object };
+    });
+  }
+
+  remove({ position }: { position: number[] }): this {
+    const key = this.serializeKey(...position);
+    return produce(this, (draft: this) => {
+      draft._objectStorage.delete(key);
     });
   }
 

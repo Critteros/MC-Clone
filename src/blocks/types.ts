@@ -1,7 +1,5 @@
 export enum BlockType {
-  Air = 'air',
   Dirt = 'dirt',
-  Glass = 'glass',
   Grass = 'grass',
   Log = 'log',
   Wood = 'wood',
@@ -9,4 +7,4 @@ export enum BlockType {
   Stone = 'stone',
 }
 
-export type SolidBlockType = Exclude<BlockType, BlockType.Air>;
+export const BlockTypeList = Object.values(BlockType);

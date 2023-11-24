@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createContext, type ReactNode } from 'react';
 import { useTexture } from '@react-three/drei';
 
-import { BlockType, type SolidBlockType } from './types';
+import { BlockType } from './types';
 
 import dirtImage from './textures/dirt.jpg';
 import glassImage from './textures/glass.png';
@@ -12,7 +12,7 @@ import woodImage from './textures/wood.png';
 import sandImage from './textures/sand.png';
 import stoneImage from './textures/stone.png';
 
-type TextureRegistry = Record<SolidBlockType, THREE.Texture>;
+type TextureRegistry = Record<BlockType, THREE.Texture>;
 
 export const TextureContext = createContext<TextureRegistry | null>(null);
 
@@ -26,7 +26,7 @@ export function TextureRegistryProvider({ children }: { children: ReactNode }) {
       [BlockType.Wood]: woodImage,
       [BlockType.Sand]: sandImage,
       [BlockType.Stone]: stoneImage,
-    } satisfies Record<SolidBlockType, string>,
+    } satisfies Record<BlockType, string>,
     (data) => {
       const setupTexture = (texture: THREE.Texture) => {
         texture.magFilter = THREE.NearestFilter;

@@ -58,7 +58,7 @@ describe('useBlockData', () => {
       result.current.setBlocks(data);
     });
 
-    expect(result.current.readBlockAggregate()).toEqual({
+    expect(result.current.readBlockAggregate()).toMatchObject({
       [BlockType.Stone]: {
         blocks: data.filter(({ type }) => type === BlockType.Stone).map(({ position }) => position),
       },

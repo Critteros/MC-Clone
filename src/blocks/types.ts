@@ -5,6 +5,7 @@ export enum BlockType {
   Wood = 'wood',
   Sand = 'sand',
   Stone = 'stone',
+  Bedrock = 'bedrock',
 }
 
 export const BlockTypeList = Object.values(BlockType);

@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 
-const INITIAL_PLAYER_POSITION: PositionTuple = [0, 64, 0];
+import type { PositionTuple } from '@/types';
 
-type PositionTuple = readonly [number, number, number];
+export const INITIAL_PLAYER_POSITION: PositionTuple = [0, 67, 0];
 
 export type PlayerData = {
   position: PositionTuple;

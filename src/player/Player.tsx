@@ -11,6 +11,8 @@ import { RigidBody, CapsuleCollider, useRapier } from '@react-three/rapier';
 
 import { useKeyboardControls } from '@react-three/drei';
 
+import { INITIAL_PLAYER_POSITION } from './stores/usePlayerData';
+
 const SPEED = 5;
 const direction = new THREE.Vector3();
 const frontVector = new THREE.Vector3();
@@ -37,15 +39,29 @@ export function Player() {
     // movement
     frontVector.set(0, 0, (back ? 1 : 0) - (forward ? 1 : 0));
     sideVector.set((left ? 1 : 0) - (right ? 1 : 0), 0, 0);
-    direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(SPEED);
+    direction
+      .subVectors(frontVector, sideVector)
+      .normalize()
+      .multiplyScalar(SPEED)
+      .applyEuler(camera.rotation);
     rigidBodyRef.current.setLinvel({ x: direction.x, y: velocity.y, z: direction.z }, true);
 
     // handle jumping
     const world = rapier.world;
-    const ray = world.castRay(new RAPIER.Ray(translationVector, { x: 0, y: -1, z: 0 }), 1, true);
+    const ray = world.castRay(
+      new RAPIER.Ray(
+        { x: playerPosition[0], y: playerPosition[1], z: playerPosition[2] },
+        { x: 0, y: -1, z: 0 },
+      ),
+      2,
+      false,
+      undefined,
+      undefined,
+      rigidBodyRef.current.collider(0),
+    );
     const grounded = ray && ray.collider && Math.abs(ray.toi) <= 1.75;
 
-    if (grounded && jump) {
+    if (jump && grounded) {
       rigidBodyRef.current.setLinvel({ x: 0, y: 7.5, z: 0 }, true);
     }
     // Update store state
@@ -59,7 +75,7 @@ export function Player() {
         type="dynamic"
         colliders={false}
         mass={1}
-        position={[0, 67, 0]}
+        position={INITIAL_PLAYER_POSITION}
         enabledRotations={[false, false, false]}
       >
         <CapsuleCollider args={[0.75, 0.5]} />

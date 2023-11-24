@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useMemo, useLayoutEffect } from 'react';
 import {
   InstancedRigidBodies,
   RapierRigidBody,
@@ -9,7 +9,6 @@ import { nanoid } from 'nanoid';
 
 import { BlockType } from './types';
 import { useBlockMaterial } from './hooks/useBlockMaterial';
-
 import { BLOCK_GEOMETRY } from './constants';
 
 type PositionIndicies = [number, number, number];
@@ -25,7 +24,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
   const rigidBodies = useRef<RapierRigidBody[]>(null);
   const material = useBlockMaterial(blockType);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!nonSolidMeshRef.current) return;
 
     const mesh = nonSolidMeshRef.current;
@@ -36,10 +35,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
       matrixHelper.updateMatrix();
       mesh.setMatrixAt(index, matrixHelper.matrix);
     });
-
-    return () => {
-      mesh.clear();
-    };
+    mesh.instanceMatrix.needsUpdate = true;
   }, [positions]);
 
   const instances = useMemo(() => {
@@ -49,6 +45,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
       return {
         key: `rigid_${blockType}_${nanoid()}`,
         position: [x, y, z],
+        type: 'fixed',
       };
     });
 
@@ -57,20 +54,16 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
 
   return (
     <>
-      <instancedMesh
-        ref={nonSolidMeshRef}
-        key={`non-solid-${blockType}-${positions.length}`}
-        args={[BLOCK_GEOMETRY, material, positions.length]}
-      />
       {rigidPositions.length > 0 && (
         <InstancedRigidBodies ref={rigidBodies} instances={instances} colliders="cuboid">
           <instancedMesh
             args={[BLOCK_GEOMETRY, material, rigidPositions.length]}
-            key={`rigid-${blockType}-${rigidPositions.length}`}
             count={rigidPositions.length}
+            frustumCulled={false}
           />
         </InstancedRigidBodies>
       )}
+      <instancedMesh ref={nonSolidMeshRef} args={[BLOCK_GEOMETRY, material, positions.length]} />
     </>
   );
 }

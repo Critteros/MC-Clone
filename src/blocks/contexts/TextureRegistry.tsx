@@ -4,13 +4,13 @@ import { useTexture } from '@react-three/drei';
 
 import { BlockType } from '../types';
 
-import dirtImage from './textures/dirt.jpg';
-import grassImage from './textures/grass.jpg';
-import logImage from './textures/log.jpg';
-import woodImage from './textures/wood.png';
-import sandImage from './textures/sand.png';
-import stoneImage from './textures/stone.png';
-import bedrockImage from './textures/bedrock.png';
+import dirtImage from '../textures/dirt.jpg';
+import grassImage from '../textures/grass.jpg';
+import logImage from '../textures/log.jpg';
+import woodImage from '../textures/wood.png';
+import sandImage from '../textures/sand.png';
+import stoneImage from '../textures/stone.png';
+import bedrockImage from '../textures/bedrock.png';
 
 type TextureRegistry = Record<BlockType, THREE.Texture>;
 

@@ -19,7 +19,7 @@ function App() {
         <BlockRegistryProvider>
           <KeyboardControls map={keyMap}>
             <Suspense fallback={null}>
-              <Physics gravity={[0, -9.81, 0]}>
+              <Physics gravity={[0, -9.81, 0]} debug>
                 <Renderer />
               </Physics>
             </Suspense>

@@ -3,7 +3,7 @@ import * as RAPIER from '@dimforge/rapier3d-compat';
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useKeyboardControls } from '@react-three/drei';
-import { RigidBody, CapsuleCollider, useRapier } from '@react-three/rapier';
+import { RigidBody, CuboidCollider, useRapier } from '@react-three/rapier';
 
 import { Controls } from '@/hooks/useKeyMap';
 import type { PositionTuple } from '@/types';
@@ -37,7 +37,7 @@ export function Player() {
     ] as PositionTuple;
 
     // update camera position
-    camera.position.set(...playerPosition);
+    camera.position.set(playerPosition[0], playerPosition[1] + 0.5, playerPosition[2]);
 
     // Calculate movement direction
     frontVector.set(0, 0, (back ? 1 : 0) - (forward ? 1 : 0));
@@ -103,7 +103,7 @@ export function Player() {
         position={INITIAL_PLAYER_POSITION}
         enabledRotations={[false, false, false]}
       >
-        <CapsuleCollider args={[1, 0.25]} />
+        <CuboidCollider args={[0.25, 0.75, 0.25]} />
       </RigidBody>
     </>
   );

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { useRef, useMemo, useLayoutEffect } from 'react';
+import { useRef, useMemo, useLayoutEffect, useEffect } from 'react';
 import {
   InstancedRigidBodies,
   RapierRigidBody,
@@ -7,8 +7,6 @@ import {
 } from '@react-three/rapier';
 import { useFrame } from '@react-three/fiber';
 import { nanoid } from 'nanoid';
-
-import { useBlockData } from '@/world/useBlockData';
 
 import { BlockType } from './types';
 import { useBlockMaterial } from './hooks/useBlockMaterial';
@@ -21,7 +19,7 @@ type BlockLayerProps = {
   type: BlockType;
   positions: PositionIndicies[];
   rigidPositions?: PositionIndicies[];
-  onSelection?: (position: PositionIndicies, distance: number) => void;
+  onSelection?: (position: PositionIndicies, distance: number, faceIndex: number) => void;
   onDeselection?: () => void;
   selection?: PositionIndicies;
 };
@@ -37,10 +35,9 @@ export function BlockLayer({
   const nonSolidMeshRef = useRef<THREE.InstancedMesh>(null);
   const rigidBodies = useRef<RapierRigidBody[]>(null);
   const material = useBlockMaterial(blockType);
-  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const solidMeshRef = useRef<THREE.InstancedMesh>(null);
   const selectionRef = useRef<THREE.Mesh>(null);
   const texture = useBlockTexture(blockType);
-  const { removeBlock } = useBlockData();
 
   const cameraPostion = new THREE.Vector3();
   const cameraDirection = new THREE.Vector3();
@@ -85,16 +82,21 @@ export function BlockLayer({
     return elements;
   }, [rigidPositions, blockType]);
 
+  useEffect(() => {
+    if (!solidMeshRef.current) return;
+    solidMeshRef.current.instanceMatrix.needsUpdate = true;
+  }, [rigidPositions]);
+
   useFrame(({ camera }) => {
-    if (!meshRef.current) return;
-    meshRef.current.computeBoundingSphere();
+    if (!solidMeshRef.current) return;
+    solidMeshRef.current.computeBoundingSphere();
     camera.getWorldPosition(cameraPostion);
     camera.getWorldDirection(cameraDirection);
 
     const raycaster = new THREE.Raycaster(cameraPostion, cameraDirection.normalize());
     raycaster.far = 4;
 
-    const intersects = raycaster.intersectObject(meshRef.current);
+    const intersects = raycaster.intersectObject(solidMeshRef.current);
     if (intersects.length === 0) {
       onDeselection?.();
       return;
@@ -105,28 +107,38 @@ export function BlockLayer({
     const instanceId = instance.instanceId;
     if (instanceId == null) return;
     const position = rigidPositions[instanceId];
-    if (!position) return;
+    if (!position || instance.faceIndex == null) return;
 
-    onSelection?.(position, Math.round(instance.distance * 100) / 100);
+    onSelection?.(position, Math.round(instance.distance * 10) / 10, instance.faceIndex);
   });
 
+  // const handleOnClick: InstancedMeshProps['onClick'] = (e) => {
+  //   e.stopPropagation();
+  //   if (!selectionRef.current?.visible) return;
+  //   const position = e.instanceId && rigidPositions[e.instanceId];
+  //   if (!position) return;
+  //   if (e.button === 0) removeBlock(position);
+  //   if (e.button === 2) {
+  //     if (e.faceIndex == null) return;
+  //     const placePosition = getPlaceBlockPosition({
+  //       position,
+  //       face: e.faceIndex,
+  //     });
+  //     setBlock({ position: placePosition, type: BlockType.Dirt });
+  //     console.log('place block');
+  //   }
+  // };
+
   return (
-    <>
+    <group name={`${blockType}-layer`}>
       <instancedMesh ref={nonSolidMeshRef} args={[BLOCK_GEOMETRY, material, positions.length]} />
       {rigidPositions.length > 0 && (
         <InstancedRigidBodies ref={rigidBodies} instances={instances} colliders="cuboid">
           <instancedMesh
             args={[BLOCK_GEOMETRY, material, rigidPositions.length]}
-            ref={meshRef}
+            ref={solidMeshRef}
             count={rigidPositions.length}
             frustumCulled={false}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!selectionRef.current?.visible) return;
-              const position = e.instanceId && rigidPositions[e.instanceId];
-              if (!position) return;
-              removeBlock(position);
-            }}
           />
         </InstancedRigidBodies>
       )}
@@ -134,6 +146,6 @@ export function BlockLayer({
         <boxGeometry args={[1.05, 1.05, 1.05]} />
         <meshStandardMaterial map={texture} color="white" />
       </mesh>
-    </>
+    </group>
   );
 }

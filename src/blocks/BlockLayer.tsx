@@ -60,7 +60,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
     });
 
     return elements;
-  }, [blockType, rigidPositions]);
+  }, [rigidPositions, blockType]);
 
   useFrame(({ camera }) => {
     if (!selectionRef.current || !meshRef.current) return;

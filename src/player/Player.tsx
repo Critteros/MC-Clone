@@ -54,7 +54,7 @@ export function Player() {
 
     const terainCollisionRay = world.castRay(
       new RAPIER.Ray(
-        { x: playerPosition[0], y: playerPosition[1] - 1, z: playerPosition[2] },
+        { x: playerPosition[0], y: playerPosition[1] - 0.5, z: playerPosition[2] },
         { x: direction.x, y: 0, z: direction.z },
       ),
       2,

@@ -4,7 +4,7 @@ import type { PositionTuple } from '@/types';
 import { usePlayerData } from '../stores/usePlayerData';
 import { useBlockDataStore } from '@/world/stores/useBlockDataStore';
 
-const RADIUS = 5;
+const RADIUS = 3;
 
 function recalculatePhysicsBlock(playerPosition: PositionTuple): PositionTuple[] {
   const [px, py, pz] = playerPosition;
@@ -54,6 +54,13 @@ function recalculatePhysicsBlock(playerPosition: PositionTuple): PositionTuple[]
 export function usePlayerPhysicsBlocks() {
   const lastProcessedPositionRef = useRef<PositionTuple>([0, 0, 0]);
   const [physicsBlocks, setPhysicsBlocks] = useState<PositionTuple[]>([]);
+  const blockData = useBlockDataStore((s) => s.blockData);
+
+  useEffect(() => {
+    const [x, y, z] = lastProcessedPositionRef.current;
+    const physicsBlocks = recalculatePhysicsBlock([x, y, z]);
+    setPhysicsBlocks(physicsBlocks);
+  }, [blockData]);
 
   useEffect(
     () =>

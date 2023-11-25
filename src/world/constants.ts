@@ -1,7 +1,7 @@
 import { worldConstructor } from './worldConstructor';
 import { BlockType } from '@/blocks/types';
 
-export const WORLD_RADIUS = 64;
+export const WORLD_RADIUS = 16;
 export const WORLD_HEIGHT = 64;
 
 export const initialWorldData = [

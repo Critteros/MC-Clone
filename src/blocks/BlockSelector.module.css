@@ -1,0 +1,23 @@
+.wrapper {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  border: white 2px solid;
+  border-radius: 10px;
+
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  gap: 20px
+
+}
+
+.img {
+  object-fit: cover;
+  width: 60px;
+}
+
+.selected {
+  outline: 5px solid white;
+}

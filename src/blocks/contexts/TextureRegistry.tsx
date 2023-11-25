@@ -4,13 +4,15 @@ import { useTexture } from '@react-three/drei';
 
 import { BlockType } from '../types';
 
-import dirtImage from '../textures/dirt.jpg';
-import grassImage from '../textures/grass.jpg';
-import logImage from '../textures/log.jpg';
-import woodImage from '../textures/wood.png';
-import sandImage from '../textures/sand.png';
-import stoneImage from '../textures/stone.png';
-import bedrockImage from '../textures/bedrock.png';
+import {
+  dirtImage,
+  grassImage,
+  logImage,
+  woodImage,
+  sandImage,
+  stoneImage,
+  bedrockImage,
+} from '../textures/paths';
 
 type TextureRegistry = Record<BlockType, THREE.Texture>;
 
@@ -30,7 +32,6 @@ export function TextureRegistryProvider({ children }: { children: ReactNode }) {
     (data) => {
       const setupTexture = (texture: THREE.Texture) => {
         texture.magFilter = THREE.NearestFilter;
-        texture.minFilter = THREE.LinearMipMapLinearFilter;
       };
 
       if (Array.isArray(data)) {

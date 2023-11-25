@@ -6,6 +6,7 @@ import { BlockType } from '@/blocks/types';
 import { getPlaceBlockPosition } from '@/blocks/utils';
 import { usePlayerPhysicsBlocks } from '@/player/hooks/usePlayerPhysicsBlocks';
 import type { PositionTuple } from '@/types';
+import { useBlockSelection } from '@/blocks/stores/useBlockSelection';
 
 import { initialWorldData } from './constants';
 import { useBlockData } from './useBlockData';
@@ -87,7 +88,8 @@ export function TerrainRenderer() {
         position: closestSelection.position,
         face: closestSelection.faceIndex,
       });
-      setBlock({ position: placePosition, type: BlockType.Dirt });
+      const selectedBlock = useBlockSelection.getState().selectedBlock;
+      setBlock({ position: placePosition, type: selectedBlock });
       return;
     }
   };

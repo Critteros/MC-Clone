@@ -4,6 +4,7 @@ import { Stats, KeyboardControls } from '@react-three/drei';
 import { Physics } from '@react-three/rapier';
 
 import { BlockRegistryProvider } from './blocks/contexts/BlockRegistryProvider';
+import { BlockSelector } from './blocks/BlockSelector';
 import { useKeyMap } from './hooks/useKeyMap';
 
 import { Renderer } from './Renderer';
@@ -28,6 +29,7 @@ function App() {
         <Stats />
       </Canvas>
       <Cursor />
+      <BlockSelector />
     </main>
   );
 }

@@ -25,7 +25,6 @@ export function Player() {
   const rapier = useRapier();
   const [, get] = useKeyboardControls<Controls>();
   const { setPosition } = usePlayerPositionRef();
-  const meshRef = useRef<THREE.Mesh>(null);
 
   useFrame(({ camera }) => {
     if (!rigidBodyRef.current) return;
@@ -87,10 +86,6 @@ export function Player() {
       >
         <CapsuleCollider args={[0.75, 0.5]} />
       </RigidBody>
-      <mesh ref={meshRef}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="hotpink" />
-      </mesh>
     </>
   );
 }

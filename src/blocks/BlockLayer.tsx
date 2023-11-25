@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { useRef, useMemo, useLayoutEffect, useEffect } from 'react';
+import { useRef, useMemo, useLayoutEffect } from 'react';
 import {
   InstancedRigidBodies,
   RapierRigidBody,
@@ -98,8 +98,8 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
         </InstancedRigidBodies>
       )}
       <mesh ref={selectionRef}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshBasicMaterial color="white" opacity={0.8} />
+        <boxGeometry args={[1.05, 1.05, 1.05]} />
+        <meshBasicMaterial color="white" opacity={0.8} depthWrite={false} />
       </mesh>
     </>
   );

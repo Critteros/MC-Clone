@@ -14,7 +14,7 @@ function recalculatePhysicsBlock(playerPosition: PositionTuple): PositionTuple[]
   for (let x = px - RADIUS; x <= px + RADIUS; x++) {
     for (let y = py - RADIUS; y <= py + RADIUS; y++) {
       for (let z = pz - RADIUS; z <= pz + RADIUS; z++) {
-        physicsBlocks.push([x, y, z] as const);
+        physicsBlocks.push([x, y, z]);
       }
     }
   }

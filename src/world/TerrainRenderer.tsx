@@ -80,6 +80,7 @@ export function TerrainRenderer() {
     if (!closestSelection) return;
 
     if (e.button === 0) {
+      if (closestSelection.type === BlockType.Bedrock) return;
       removeBlock(closestSelection.position);
       return;
     }

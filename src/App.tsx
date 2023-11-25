@@ -1,21 +1,33 @@
+import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Stats } from '@react-three/drei';
+import { Stats, KeyboardControls } from '@react-three/drei';
+import { Physics } from '@react-three/rapier';
+
+import { BlockRegistryProvider } from './blocks/contexts/BlockRegistryProvider';
+import { useKeyMap } from './hooks/useKeyMap';
 
 import { Renderer } from './Renderer';
-import { useKeyMap } from './hooks/useKeyMap';
-import { KeyboardControls } from '@react-three/drei';
+
+import { Cursor } from './Cursor';
 
 function App() {
   const keyMap = useKeyMap();
 
   return (
-    <main className="w-screen h-screen">
+    <main className="h-screen w-screen">
       <Canvas>
-        <KeyboardControls map={keyMap}>
-          <Renderer />
-        </KeyboardControls>
+        <BlockRegistryProvider>
+          <KeyboardControls map={keyMap}>
+            <Suspense fallback={null}>
+              <Physics gravity={[0, -9.81, 0]}>
+                <Renderer />
+              </Physics>
+            </Suspense>
+          </KeyboardControls>
+        </BlockRegistryProvider>
         <Stats />
       </Canvas>
+      <Cursor />
     </main>
   );
 }

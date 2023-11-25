@@ -1,14 +1,20 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 
 import { BlockLayer } from '@/blocks/BlockLayer';
 import { BlockType } from '@/blocks/types';
 import { usePlayerPhysicsBlocks } from '@/player/hooks/usePlayerPhysicsBlocks';
+import type { PositionTuple } from '@/types';
 
 import { initialWorldData } from './constants';
 import { useBlockData } from './useBlockData';
 
 export function TerrainRenderer() {
   const { readBlockAggregate, setBlocks, getBlock } = useBlockData();
+  const [closestSelection, setClosestSelection] = useState<{
+    type: BlockType;
+    distance: number;
+    position: PositionTuple;
+  } | null>(null);
   const physicsBlocks = usePlayerPhysicsBlocks();
 
   const worldSetupRef = useRef(false);
@@ -41,6 +47,28 @@ export function TerrainRenderer() {
     return entries;
   }, [aggregateData, existingPhysicsBlocks]);
 
+  const getOnSelection = (blockType: BlockType) => (position: PositionTuple, distance: number) => {
+    if (!closestSelection) {
+      setClosestSelection({ type: blockType, distance, position });
+      return;
+    }
+    if (closestSelection.type === blockType && distance !== closestSelection.distance) {
+      setClosestSelection({ type: blockType, distance, position });
+      return;
+    }
+    const currentDistance = closestSelection.distance;
+    if (distance < currentDistance) {
+      setClosestSelection({ type: blockType, distance, position });
+    }
+  };
+
+  const getOnDeselection = (blockType: BlockType) => () => {
+    if (!closestSelection) return;
+    if (closestSelection.type === blockType) {
+      setClosestSelection(null);
+    }
+  };
+
   return (
     <>
       {blockData.map(([blockType, { positions, rigidPositions }]) => (
@@ -49,6 +77,9 @@ export function TerrainRenderer() {
           type={blockType}
           positions={positions}
           rigidPositions={rigidPositions}
+          onSelection={getOnSelection(blockType)}
+          onDeselection={getOnDeselection(blockType)}
+          selection={closestSelection?.type === blockType ? closestSelection.position : undefined}
         />
       ))}
     </>

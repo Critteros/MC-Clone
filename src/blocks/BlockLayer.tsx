@@ -5,17 +5,15 @@ import {
   RapierRigidBody,
   type InstancedRigidBodyProps,
 } from '@react-three/rapier';
+import { useFrame } from '@react-three/fiber';
 import { nanoid } from 'nanoid';
+
+import { useBlockData } from '@/world/useBlockData';
 
 import { BlockType } from './types';
 import { useBlockMaterial } from './hooks/useBlockMaterial';
 import { BLOCK_GEOMETRY } from './constants';
-
-import { useFrame } from '@react-three/fiber';
-import { useBlockData } from '@/world/useBlockData';
-
-const cameraPostion = new THREE.Vector3();
-const cameraDirection = new THREE.Vector3();
+import { useBlockTexture } from './hooks/useBlockTexture';
 
 type PositionIndicies = [number, number, number];
 
@@ -23,15 +21,29 @@ type BlockLayerProps = {
   type: BlockType;
   positions: PositionIndicies[];
   rigidPositions?: PositionIndicies[];
+  onSelection?: (position: PositionIndicies, distance: number) => void;
+  onDeselection?: () => void;
+  selection?: PositionIndicies;
 };
 
-export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: BlockLayerProps) {
+export function BlockLayer({
+  type: blockType,
+  positions,
+  rigidPositions = [],
+  onSelection,
+  onDeselection,
+  selection,
+}: BlockLayerProps) {
   const nonSolidMeshRef = useRef<THREE.InstancedMesh>(null);
   const rigidBodies = useRef<RapierRigidBody[]>(null);
   const material = useBlockMaterial(blockType);
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const selectionRef = useRef<THREE.Mesh>(null);
+  const texture = useBlockTexture(blockType);
   const { removeBlock } = useBlockData();
+
+  const cameraPostion = new THREE.Vector3();
+  const cameraDirection = new THREE.Vector3();
 
   useLayoutEffect(() => {
     if (!nonSolidMeshRef.current) return;
@@ -48,6 +60,17 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
     mesh.computeBoundingSphere();
   }, [positions]);
 
+  useLayoutEffect(() => {
+    if (!selectionRef.current) return;
+    if (!selection) {
+      selectionRef.current.visible = false;
+      return;
+    }
+    selectionRef.current.visible = true;
+    selectionRef.current.position.set(...selection);
+    selectionRef.current.updateMatrix();
+  }, [selection]);
+
   const instances = useMemo(() => {
     if (rigidPositions.length === 0) return [];
 
@@ -63,7 +86,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
   }, [rigidPositions, blockType]);
 
   useFrame(({ camera }) => {
-    if (!selectionRef.current || !meshRef.current) return;
+    if (!meshRef.current) return;
     meshRef.current.computeBoundingSphere();
     camera.getWorldPosition(cameraPostion);
     camera.getWorldDirection(cameraDirection);
@@ -73,7 +96,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
 
     const intersects = raycaster.intersectObject(meshRef.current);
     if (intersects.length === 0) {
-      selectionRef.current.visible = false;
+      onDeselection?.();
       return;
     }
     const instance = intersects[0];
@@ -82,11 +105,9 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
     const instanceId = instance.instanceId;
     if (instanceId == null) return;
     const position = rigidPositions[instanceId];
+    if (!position) return;
 
-    selectionRef.current.visible = true;
-    selectionRef.current.position.set(...position);
-    selectionRef.current.renderOrder = 100;
-    selectionRef.current.updateMatrix();
+    onSelection?.(position, Math.round(instance.distance * 100) / 100);
   });
 
   return (
@@ -101,6 +122,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
             frustumCulled={false}
             onClick={(e) => {
               e.stopPropagation();
+              if (!selectionRef.current?.visible) return;
               const position = e.instanceId && rigidPositions[e.instanceId];
               if (!position) return;
               removeBlock(position);
@@ -110,7 +132,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
       )}
       <mesh ref={selectionRef}>
         <boxGeometry args={[1.05, 1.05, 1.05]} />
-        <meshBasicMaterial color="white" opacity={0.8} depthWrite={false} />
+        <meshStandardMaterial map={texture} color="white" />
       </mesh>
     </>
   );

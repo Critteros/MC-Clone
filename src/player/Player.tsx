@@ -13,6 +13,8 @@ import { useKeyboardControls } from '@react-three/drei';
 
 import { INITIAL_PLAYER_POSITION } from './stores/usePlayerData';
 
+import type { PositionTuple } from '@/types';
+
 const SPEED = 5;
 const direction = new THREE.Vector3();
 const frontVector = new THREE.Vector3();
@@ -23,6 +25,7 @@ export function Player() {
   const rapier = useRapier();
   const [, get] = useKeyboardControls<Controls>();
   const { setPosition } = usePlayerPositionRef();
+  const meshRef = useRef<THREE.Mesh>(null);
 
   useFrame(({ camera }) => {
     if (!rigidBodyRef.current) return;
@@ -31,7 +34,11 @@ export function Player() {
     const velocity = rigidBodyRef.current.linvel();
 
     const translationVector = rigidBodyRef.current.translation();
-    const playerPosition = [translationVector.x, translationVector.y, translationVector.z] as const;
+    const playerPosition = [
+      translationVector.x,
+      translationVector.y,
+      translationVector.z,
+    ] as PositionTuple;
 
     // update camera position
     camera.position.set(...playerPosition);
@@ -80,6 +87,10 @@ export function Player() {
       >
         <CapsuleCollider args={[0.75, 0.5]} />
       </RigidBody>
+      <mesh ref={meshRef}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color="hotpink" />
+      </mesh>
     </>
   );
 }

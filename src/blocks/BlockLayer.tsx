@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { useRef, useMemo, useLayoutEffect } from 'react';
+import { useRef, useMemo, useLayoutEffect, useEffect } from 'react';
 import {
   InstancedRigidBodies,
   RapierRigidBody,
@@ -10,6 +10,11 @@ import { nanoid } from 'nanoid';
 import { BlockType } from './types';
 import { useBlockMaterial } from './hooks/useBlockMaterial';
 import { BLOCK_GEOMETRY } from './constants';
+
+import { useFrame } from '@react-three/fiber';
+
+const cameraPostion = new THREE.Vector3();
+const cameraDirection = new THREE.Vector3();
 
 type PositionIndicies = [number, number, number];
 
@@ -23,6 +28,8 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
   const nonSolidMeshRef = useRef<THREE.InstancedMesh>(null);
   const rigidBodies = useRef<RapierRigidBody[]>(null);
   const material = useBlockMaterial(blockType);
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const selectionRef = useRef<THREE.Mesh>(null);
 
   useLayoutEffect(() => {
     if (!nonSolidMeshRef.current) return;
@@ -36,6 +43,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
       mesh.setMatrixAt(index, matrixHelper.matrix);
     });
     mesh.instanceMatrix.needsUpdate = true;
+    mesh.computeBoundingSphere();
   }, [positions]);
 
   const instances = useMemo(() => {
@@ -52,18 +60,47 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
     return elements;
   }, [blockType, rigidPositions]);
 
+  useFrame(({ camera }) => {
+    if (!selectionRef.current || !meshRef.current) return;
+    meshRef.current.computeBoundingSphere();
+    camera.getWorldPosition(cameraPostion);
+    camera.getWorldDirection(cameraDirection);
+
+    const raycaster = new THREE.Raycaster(cameraPostion, cameraDirection.normalize());
+    raycaster.far = 4;
+
+    const intersects = raycaster.intersectObject(meshRef.current);
+    if (intersects.length === 0) {
+      selectionRef.current.visible = false;
+      return;
+    }
+
+    const instanceId = intersects[0].instanceId;
+    if (!instanceId) return;
+    selectionRef.current.visible = true;
+    selectionRef.current.position.set(...rigidPositions[instanceId]);
+    selectionRef.current.renderOrder = 100;
+    selectionRef.current.updateMatrix();
+  });
+
   return (
     <>
+      <instancedMesh ref={nonSolidMeshRef} args={[BLOCK_GEOMETRY, material, positions.length]} />
+
       {rigidPositions.length > 0 && (
         <InstancedRigidBodies ref={rigidBodies} instances={instances} colliders="cuboid">
           <instancedMesh
             args={[BLOCK_GEOMETRY, material, rigidPositions.length]}
+            ref={meshRef}
             count={rigidPositions.length}
             frustumCulled={false}
           />
         </InstancedRigidBodies>
       )}
-      <instancedMesh ref={nonSolidMeshRef} args={[BLOCK_GEOMETRY, material, positions.length]} />
+      <mesh ref={selectionRef}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshBasicMaterial color="white" opacity={0.8} />
+      </mesh>
     </>
   );
 }

@@ -8,6 +8,8 @@ import { useKeyMap } from './hooks/useKeyMap';
 
 import { Renderer } from './Renderer';
 
+import { Cursor } from './Cursor';
+
 function App() {
   const keyMap = useKeyMap();
 
@@ -25,6 +27,7 @@ function App() {
         </BlockRegistryProvider>
         <Stats />
       </Canvas>
+      <Cursor />
     </main>
   );
 }

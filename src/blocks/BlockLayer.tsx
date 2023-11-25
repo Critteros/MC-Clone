@@ -12,6 +12,7 @@ import { useBlockMaterial } from './hooks/useBlockMaterial';
 import { BLOCK_GEOMETRY } from './constants';
 
 import { useFrame } from '@react-three/fiber';
+import { useBlockData } from '@/world/useBlockData';
 
 const cameraPostion = new THREE.Vector3();
 const cameraDirection = new THREE.Vector3();
@@ -30,6 +31,7 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
   const material = useBlockMaterial(blockType);
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const selectionRef = useRef<THREE.Mesh>(null);
+  const { removeBlock } = useBlockData();
 
   useLayoutEffect(() => {
     if (!nonSolidMeshRef.current) return;
@@ -74,11 +76,15 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
       selectionRef.current.visible = false;
       return;
     }
+    const instance = intersects[0];
+    if (!instance) return;
 
-    const instanceId = intersects[0].instanceId;
-    if (!instanceId) return;
+    const instanceId = instance.instanceId;
+    if (instanceId == null) return;
+    const position = rigidPositions[instanceId];
+
     selectionRef.current.visible = true;
-    selectionRef.current.position.set(...rigidPositions[instanceId]);
+    selectionRef.current.position.set(...position);
     selectionRef.current.renderOrder = 100;
     selectionRef.current.updateMatrix();
   });
@@ -86,7 +92,6 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
   return (
     <>
       <instancedMesh ref={nonSolidMeshRef} args={[BLOCK_GEOMETRY, material, positions.length]} />
-
       {rigidPositions.length > 0 && (
         <InstancedRigidBodies ref={rigidBodies} instances={instances} colliders="cuboid">
           <instancedMesh
@@ -94,6 +99,12 @@ export function BlockLayer({ type: blockType, positions, rigidPositions = [] }: 
             ref={meshRef}
             count={rigidPositions.length}
             frustumCulled={false}
+            onClick={(e) => {
+              e.stopPropagation();
+              const position = e.instanceId && rigidPositions[e.instanceId];
+              if (!position) return;
+              removeBlock(position);
+            }}
           />
         </InstancedRigidBodies>
       )}

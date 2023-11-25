@@ -7,6 +7,8 @@ export enum Controls {
   left = 'left',
   right = 'right',
   jump = 'jump',
+  leftClick = 'leftClick',
+  rightClick = 'rightClick',
 }
 
 export function useKeyMap() {
@@ -17,6 +19,8 @@ export function useKeyMap() {
       { name: Controls.left, keys: ['ArrowLeft', 'KeyA'] },
       { name: Controls.right, keys: ['ArrowRight', 'KeyD'] },
       { name: Controls.jump, keys: ['Space'] },
+      { name: Controls.leftClick, keys: ['Mouse0'] },
+      { name: Controls.rightClick, keys: ['Mouse2'] },
     ],
     [],
   );

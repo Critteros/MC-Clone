@@ -29,6 +29,14 @@ export function useBlockData() {
     [blockData],
   );
 
+  const removeBlock = useCallback(
+    (position: PositionTuple) => {
+      const entry = blockData.remove({ position });
+      updateBlockData(entry);
+    },
+    [blockData, updateBlockData],
+  );
+
   const setBlocks = useCallback(
     (blocks: ReadWriteBlockInfo[]) => {
       updateBlockData(
@@ -76,5 +84,6 @@ export function useBlockData() {
     setBlocks,
     getBlocks,
     readBlockAggregate,
+    removeBlock,
   } as const;
 }

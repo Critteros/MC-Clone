@@ -1,30 +1,32 @@
-# React + TypeScript + Vite
+# MC-Clone
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Simple Minecraft clone made using React and `react-three-fiber`
 
-Currently, two official plugins are available:
+Live version: [mc-clone.critteros.dev](https://mc-clone.critteros.dev)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Run project locally
 
-## Expanding the ESLint configuration
+Mise is used to manage node version, make sure it is installed or use the node version specified in `.nvmrc`
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+mise install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Package manager is selected using `corepack`, make sure it is enabled for the current node version
+
+```bash
+corepack enable
+corepack install
+```
+
+Install dependencies
+
+```bash
+pnpm install
+```
+
+Run the project
+
+```bash
+pnpm dev
+```

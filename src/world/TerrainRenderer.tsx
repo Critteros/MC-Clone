@@ -76,6 +76,7 @@ export function TerrainRenderer() {
 
   const handleMeshClick: GroupProps['onClick'] = (e) => {
     e.stopPropagation();
+    console.log('Mesg click', e)
 
     if (!closestSelection) return;
 
@@ -96,7 +97,7 @@ export function TerrainRenderer() {
   };
 
   return (
-    <group onClick={handleMeshClick}>
+    <group onPointerDown={handleMeshClick}>
       {blockData.map(([blockType, { positions, rigidPositions }]) => (
         <BlockLayer
           key={`block-layer-${blockType}`}
